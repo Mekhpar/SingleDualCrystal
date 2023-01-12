@@ -18,13 +18,12 @@
 #include "XML/Layering.h"
 #include "DD4hep/OpticalSurfaces.h"
 
-
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
 
 static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sens)  {
-  std::cout<<"Creating DRCrystal - SCE"<<std::endl;
+  std::cout<<"Creating DRCrystal"<<std::endl;
 
   static double tol = 0.001;
   // material to underly it all
@@ -49,14 +48,12 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
 
 
-  double hwidth   = x_dim.width()/2.;
-  double hzmax = x_dim.z_length()/2.;
+  double hwidth   = x_dim.width();
+  double hzmax = x_dim.z_length();
   std::cout<<"half width zmax are "<<hwidth<<" "<<hzmax<<std::endl;
 
   OpticalSurfaceManager surfMgr = description.surfaceManager();
   OpticalSurface cryS  = surfMgr.opticalSurface("/world/"+det_name+"#mirrorSurface");
-
-
 
   // three structures, volumes, placedvolumes, and detelements
   // volumes need a setVisAttribute
@@ -77,7 +74,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   PlacedVolume  env_phv   = motherVol.placeVolume(envelope,RotationZYX(0,0,0));
 
   env_phv.addPhysVolID("system",det_id);
-
+  //env_phv.addPhysVolID("barrel",0);
   sdet.setPlacement(env_phv);  // associate the placed volume to the detector element
   sens.setType("calorimeter");
 
@@ -93,16 +90,10 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
 
     // tower envelope
-  dd4hep::Box towertrap(hwidth+tol,hwidth+tol,hzmax+tol);
+  dd4hep::Box towertrap(hwidth,hwidth,hzmax);
   dd4hep::Volume towerVol( "tower", towertrap, air);
   std::cout<<"   tower visstr is "<<x_towers.visStr()<<std::endl;
   towerVol.setVisAttributes(description, x_towers.visStr());
-
-
-  //SkinSurface haha = SkinSurface(description,sdet, "HallCrys", cryS, towerVol);
-  //haha.isValid();
-
-
   int itower=0;
   string t_name = _toString(itower,"towerp%d") ;
   DetElement tower_det(t_name,det_id);  // detector element for a tower
@@ -112,16 +103,15 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   double z_bottoml  = -hzmax;
   int l_num = 1;
   for(xml_coll_t li(x_det,_U(layer)); li; ++li)  {
-    std::cout<<"DRCrystal layer (layer contains slices of material)"<<std::endl;
+    std::cout<<"DRCrystal layer "<<li<<std::endl;
     xml_comp_t x_layer = li;
     int repeat = x_layer.repeat();
-    std::cout<<" layer occurs "<<repeat<<" times" <<std::endl;
       // Loop over number of repeats for this layer.
     for (int j=0; j<repeat; j++)    {
-      std::cout<<"DRCrystal layer "<<l_num<<" repeat "<<j<<std::endl;
+      std::cout<<"DRCrystal layer "<<li<<" repeat "<<j<<std::endl;
       string l_name = _toString(l_num,"layer%d");
-      double l_hzthick = layering.layer(l_num-1)->thickness()/2.;  // Layer's thickness.
-      std::cout<<"layer half thickness is "<<l_hzthick<<std::endl;
+      double l_hzthick = layering.layer(l_num-1)->thickness();  // Layer's thickness.
+      std::cout<<"half  thickness is "<<l_hzthick<<std::endl;
 
 	// find top and bottom lengths at this position and center
         // relative to tower bottom
@@ -130,7 +120,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
       Position   l_pos(0.,0.,z_midl);      // Position of the layer.
       std::cout<<" placed at z of "<<z_midl<<std::endl;
 
-      dd4hep::Box l_box(hwidth,hwidth,l_hzthick);
+      dd4hep::Box l_box(hwidth-tol,hwidth-tol,l_hzthick-tol);
       dd4hep::Volume     l_vol(l_name,l_box,air);
       DetElement layer(tower_det, l_name, det_id);
 
@@ -139,10 +129,10 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
       double z_bottoms2=-l_hzthick;  
       for(xml_coll_t si(x_layer,_U(slice)); si; ++si)  {
-	std::cout<<" with slice "<<s_num<<std::endl;
+	std::cout<<" with slice "<<si<<std::endl;
 	xml_comp_t x_slice = si;
 	string     s_name  = _toString(s_num,"slice%d");
-	double     s_hzthick = x_slice.thickness()/2.;
+	double     s_hzthick = x_slice.thickness();
 	std::cout<<" with half  thickness "<<s_hzthick<<std::endl;
 
 	      // this is relative to tower bottom, not layer bottom
@@ -152,7 +142,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
 	Position   s_pos(0.,0.,z_mids2);      // Position of the layer.
 	std::cout<<" placed at "<<z_mids2<<std::endl;
-	dd4hep::Box s_box(hwidth,hwidth,s_hzthick);
+	dd4hep::Box s_box(hwidth-tol,hwidth-tol,s_hzthick);
 
 
 	dd4hep::Volume     s_vol(s_name,s_box,description.material(x_slice.materialStr()));
@@ -185,10 +175,6 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
       PlacedVolume layer_phv = towerVol.placeVolume(l_vol,l_pos);
       layer_phv.addPhysVolID("layer", l_num);
       layer.setPlacement(layer_phv);
-
-
-
-
         // Increment to next layer Z position.
 
 
@@ -210,28 +196,21 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   Transform3D tr(RotationZYX(0.,0.,0.));
   PlacedVolume pv = envelope.placeVolume(towerVol,tr);
   pv.addPhysVolID("system",det_id);
-
+  /*pv.addPhysVolID("barrel",0);
+  pv.addPhysVolID("side",0);
+  pv.addPhysVolID("ieta",0);
+  pv.addPhysVolID("iphi",0);*/
 
 
   //DetElement sd = nPhi==0 ? tower_det : tower_det.clone(t_name+_toString(nPhi,"0%d"));
   DetElement sd = tower_det;
 
   sd.setPlacement(pv);
+  //sdet.add(sd);
 
   BorderSurface haha = BorderSurface(description,sdet, "HallCrys", cryS, pv,env_phv);
   haha.isValid();
-
-
-
-
-
-  // put a reflective surface between crystal and environment
-
-
-
-  //sdet.add(sd);
-
-
+  
   // Set envelope volume attributes.
   std::cout<<" envelope visstr is "<<x_det.visStr()<<std::endl;
   envelope.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
