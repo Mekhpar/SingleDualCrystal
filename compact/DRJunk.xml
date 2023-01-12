@@ -39,41 +39,45 @@
  
   <properties>
     <matrix name="RINDEX__Air" coldim="2" values="  
-              2.034*eV 1. 
-              2.068*eV 1.
-              2.103*eV 1.
-              2.139*eV 1.
-              2.177*eV 1.
-              2.216*eV 1.
-              2.256*eV 1.
-              2.298*eV 1.
-              2.341*eV 1.
-              2.386*eV 1.
-              2.433*eV 1.
-              2.481*eV 1.
-              2.532*eV 1.
-              2.585*eV 1.
-              2.640*eV 1.
-              2.697*eV 1.
-              2.757*eV 1.
-              2.820*eV 1.
-              2.885*eV 1.
-              2.954*eV 1.
-              3.026*eV 1.
-              3.102*eV 1.
-              3.181*eV 1.
-              3.265*eV 1.
-              3.353*eV 1.
-              3.446*eV 1.
-              3.545*eV 1.
-              3.649*eV 1.
-              3.760*eV 1.
-              3.877*eV 1.
-              4.002*eV 1.
-              4.136*eV 1.
+     1.1*eV 1.
+     1.500*eV 1.
+     1.750*eV 1.
+     2.0*eV 1.
+     2.034*eV 1.
+     2.068*eV 1.
+     2.103*eV 1.
+     2.139*eV 1.
+     2.177*eV 1.
+     2.216*eV 1.
+     2.256*eV 1.
+     2.298*eV 1.
+     2.341*eV 1.
+     2.386*eV 1.
+     2.433*eV 1.
+     2.481*eV 1.
+     2.532*eV 1.
+     2.585*eV 1.
+     2.640*eV 1.
+     2.697*eV 1.
+     2.757*eV 1.
+     2.820*eV 1.
+     2.885*eV 1.
+     2.954*eV 1.
+     3.026*eV 1.
+     3.102*eV 1.
+     3.181*eV 1.
+     3.265*eV 1.
+     3.353*eV 1.
+     3.446*eV 1.
+     3.545*eV 1.
+     3.649*eV 1.
+     3.760*eV 1.
+     3.877*eV 1.
+     4.002*eV 1.
+     4.136*eV 1.
+      
     "/>
     <matrix name="RINDEX__PbWO4" coldim="2" values="  
-     1.0*eV  2.19103
      1.1*eV  2.19414
      1.2*eV  2.19762
      1.3*eV  2.20149
@@ -86,6 +90,40 @@
      2.0*eV  2.24221
      2.1*eV  2.25053
      2.2*eV 2.25968
+     2.256*eV 2.26974
+     2.3*eV 2.26974
+     2.4*eV 2.28084
+     2.5*eV 2.2931
+     2.6*eV 2.30668
+     2.7*eV 2.32177
+     2.8*eV  2.3386
+     2.9*eV 2.35745
+     3.0*eV 2.37866
+     3.1*eV 2.40268
+     3.2*eV  2.43006
+     3.3*eV  2.4615
+     3.4*eV 2.49794
+     3.5*eV  2.54063
+     3.6*eV  2.59128
+     3.7*eV  2.6523
+     3.8*eV  2.72722
+     3.9*eV  2.82141
+    
+    "/>
+    <matrix name="RINDEX__kill" coldim="2" values="  
+     1.1*eV  2.19414
+     1.2*eV  2.19762
+     1.3*eV  2.20149
+     1.4*eV  2.20577
+     1.5*eV  2.2105
+     1.6*eV 2.21571
+     1.7*eV  2.22144
+     1.8*eV 2.22773
+     1.9*eV 2.23463
+     2.0*eV  2.24221
+     2.1*eV  2.25053
+     2.2*eV 2.25968
+     2.256*eV 2.26974
      2.3*eV 2.26974
      2.4*eV 2.28084
      2.5*eV 2.2931
@@ -105,9 +143,62 @@
      3.9*eV  2.82141
     "/>
 
+    <matrix name="RINDEX__test_PbWO4" coldim="2" values="  
+     2.1*eV  2.25053     
+     2.2*eV  2.25968
+     2.256*eV 2.26974
+    
+    "/>
+
+    <matrix name="RINDEX__test_kill" coldim="2" values="  
+     2.1*eV  2.25053    
+     2.2*eV  2.25968
+     2.256*eV 2.26974
+    
+    "/>
+
+    <matrix name="RINDEX__Silicone" coldim="2" values="  
+     1.1*eV 1.57
+     1.500*eV 1.57
+     1.750*eV 1.57
+     2.0*eV 1.57
+     2.034*eV 1.57
+     2.068*eV 1.57
+     2.103*eV 1.57
+     2.139*eV 1.57
+     2.177*eV 1.57
+     2.216*eV 1.57
+     2.256*eV 1.57
+     2.298*eV 1.57
+     2.341*eV 1.57
+     2.386*eV 1.57
+     2.433*eV 1.57
+     2.481*eV 1.57
+     2.532*eV 1.57
+     2.585*eV 1.57
+     2.640*eV 1.57
+     2.697*eV 1.57
+     2.757*eV 1.57
+     2.820*eV 1.57
+     2.885*eV 1.57
+     2.954*eV 1.57
+     3.026*eV 1.57
+     3.102*eV 1.57
+     3.181*eV 1.57
+     3.265*eV 1.57
+     3.353*eV 1.57
+     3.446*eV 1.57
+     3.545*eV 1.57
+     3.649*eV 1.57
+     3.760*eV 1.57
+     3.877*eV 1.57
+     4.002*eV 1.57
+     4.136*eV 1.57
+     6.0*eV 1.57
+    "/>    
+
     <matrix name="RI_PS" coldim="2" values="
-      1.37760*eV 1.5749
-      1.45864*eV 1.5764
+      1.1*eV 1.5764
       1.54980*eV 1.5782
       1.65312*eV 1.5803
       1.71013*eV 1.5815
@@ -137,10 +228,10 @@
       3.09960*eV 1.62858
       3.54241*eV 1.65191
       4.13281*eV 1.69165
+      
     "/>
     <matrix name="AbsLen_PS" coldim="2" values="
-      1.37760*eV 2.714*m
-      1.45864*eV 3.619*m
+      1.1*eV 3.619*m
       1.54980*eV 5.791*m
       1.65312*eV 4.343*m
       1.71013*eV 7.896*m
@@ -170,8 +261,9 @@
       3.09960*eV 0.200*m
       3.54241*eV 0.200*m
       4.13281*eV 0.100*m
-    "/>
+      "/>
     <matrix name="scintFast_PS" coldim="2" values="
+      1.1*eV 0.
       1.37760*eV 0.
       1.45864*eV 0.
       1.54980*eV 0.
@@ -186,7 +278,7 @@
       2.13766*eV 0.0084
       2.17516*eV 0.0153
       2.21400*eV 0.0234
-      2.25426*eV 0.0343
+      2.25426*eV 0.0343    
       2.29600*eV 0.0604
       2.33932*eV 0.0927
       2.38431*eV 0.1398
@@ -204,21 +296,58 @@
       3.54241*eV 0.
       4.13281*eV 0.
     "/>
+    
+    <matrix name="AbsLen_PbWO4" coldim="2" values="
+    1*eV 26.41170567*cm
+    2.491924071*eV 26.41170567*cm
+    2.52705078*eV 25.65681445*cm
+    2.563181955*eV 25.65681445*cm
+    2.600355854*eV 25.65681445*cm
+    2.638629504*eV 25.65681445*cm
+    2.678040871*eV 25.65681445*cm
+    2.717003092*eV 25.29596276*cm
+    2.758815138*eV 25.29596276*cm
+    2.801927859*eV 24.94449849*cm
+    2.846415974*eV 24.94449849*cm
+    2.892332871*eV 24.27007742*cm
+    2.937832906*eV 23.9469336*cm
+    2.986779095*eV 23.9469336*cm
+    3.037376425*eV 23.63172323*cm
+    3.089725278*eV 23.02555837*cm
+    3.13949987*eV 21.38077014*cm
+    3.186369517*eV 18.70837387*cm
+    3.220719845*eV 15.48275221*cm
+    3.246373208*eV 13.0145633*cm
+    3.270064988*eV 11.15523627*cm
+    3.2868482*eV 9.708078092*cm
+    3.303804576*eV 8.593280055*cm
+    3.320945706*eV 7.330625889*cm
+    3.330813064*eV 6.651855202*cm
+    3.345733565*eV 5.560374547*cm
+    3.353244055*eV 5.160917405*cm
+    3.358266778*eV 4.815007415*cm
+    3.365833707*eV 4.523924776*cm
+    3.370894244*eV 4.255916788*cm
+    3.376604418*eV 4.023302971*cm
+    3.37832*eV 4*cm
+    3.41084*eV 2.01*cm
+    3.44401*eV 0.02*cm
+    3.5*eV 0*cm
+    
+    "/>    
+    
 
     </properties>
-
-
 
 
   <surfaces>
     <opticalsurface name="/world/DRCrystal#mirrorSurface" finish="polished" model="glisur" type="dielectric_metal">
     </opticalsurface>
     <opticalsurface name="/world/DRCrystal#tyvekSurface" finish="etchedtyvekair" model="LUT" type="dielectric_LUT" value="1.0">
-    </opticalsurface>
+    </opticalsurface>  
     <opticalsurface name="/world/DRCrystal#dielectricSurface" finish="polished" model="glisur" type="dielectric_dielectric">
     </opticalsurface>
   </surfaces>
-
 
 
 
@@ -252,10 +381,18 @@
       <fraction n="0.754" ref="N"/>
       <fraction n="0.234" ref="O"/>
       <fraction n="0.012" ref="Ar"/>
-      <property name="RINDEX"        ref="RINDEX__PbWO4"/>
+      <property name="RINDEX"        ref="RINDEX__kill"/>
     </material>
 
-
+    <material name="Silicone_gap">
+      <D type="density" unit="g/cm3" value="0.965"/>
+      <fraction n="0.754" ref="Si"/>
+      <fraction n="0.234" ref="O"/>
+      <fraction n="0.006" ref="C"/>
+      <fraction n="0.006" ref="H"/>      
+      <property name="RINDEX"        ref="RINDEX__Silicone"/>
+    </material>
+    <!--Check mass fractions - these are not the correct ones -->
 
 
 <!-- danger danger will robinson using values for polystyrene -->
@@ -265,9 +402,9 @@
     <fraction n="0.40403397" ref="W"/>
     <fraction n="0.14063942" ref="O"/>
     <property name="RINDEX"        ref="RINDEX__PbWO4"/>
-      <property name="ABSLENGTH" ref="AbsLen_PS"/>
+      <property name="ABSLENGTH" ref="AbsLen_PbWO4"/>
       <property name="FASTCOMPONENT" ref="scintFast_PS"/>
-      <constant name="SCINTILLATIONYIELD" value="0.001/keV"/>
+      <constant name="SCINTILLATIONYIELD" value="0.155/keV"/>
       <constant name="FASTTIMECONSTANT" value="2.8*ns"/>
       <constant name="RESOLUTIONSCALE" value="1."/>
   </material>
