@@ -22,8 +22,8 @@
 #include <algorithm>
 
 const int nchan = 4;
-//const int ichan[nchan] = {75,73,77,64};
-const int ichan[nchan] = {358,294,422,6};
+const int ichan[nchan] = {75,73,77,64};
+//const int ichan[nchan] = {358,294,422,6};
 //const int ichan[nchan] = {326,294,358,6};
 //const int ichan[nchan] = {198,166,230,6};
 float wavelencut=550;
