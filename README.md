@@ -10,7 +10,11 @@ $ source /cvmfs/sft.cern.ch/lcg/views/LCG_101/x86_64-centos7-gcc11-opt/setup.sh
 $ source bin/thisdd4hep.sh
 
 To make changes
-When make change, go to DD4hep/build and do “make make install”
+When make change, go to DD4hep/build and do 
+
+make 
+make install
+
 To visualize the geometry
 cd examples/SingleDualCrystal/compact
 geoDisplay DRSingleCrystal.xml
