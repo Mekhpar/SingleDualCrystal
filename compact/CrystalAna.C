@@ -28,6 +28,30 @@ const int ichan[nchan] = {358,294,422,6};
 //const int ichan[nchan] = {198,166,230,6};
 float wavelencut=550;
 
+float UV_sipm_QE_x[23] = {361.161, 364.766, 379.794, 387.614,
+                           396.624, 406.226, 411.617, 426.594, 436.769, 455.931, 477.492,
+                           496.061, 517.627, 547.583, 573.349, 598.521, 615.299, 649.46,
+                           671.039, 705.202, 755.548, 773.531, 798.108};
+float UV_sipm_QE_y[23] = {0.770120854, 0.787348933, 0.879304547,
+                           0.942520324, 0.982752141, 1, 0.982752141, 0.942520324, 0.890796527,
+                           0.816088771, 0.741381015, 0.683901339, 0.620685563, 0.545977807,
+                           0.488498131, 0.448266313, 0.413790375, 0.356330478, 0.32759064,
+                           0.275866843, 0.201139308, 0.178155349, 0.149415511};
+                           
+                           
+float RGB_sipm_QE_x[29] = {305.28, 318.47, 334.67, 352.06,
+                            370.06, 396.44, 416.23, 443.81, 466.6, 477.39, 491.78, 515.17,
+                            529.56, 556.53, 582.91, 610.49, 636.26, 663.24, 684.22, 712.39,
+                            738.76, 755.55, 774.73, 795.11, 825.68, 850.26, 874.23, 894.61, 900.61};
+float RGB_sipm_QE_y[29] = {0.034678173, 0.144499016, 0.271678829,
+                            0.427750492, 0.525998688, 0.635839415, 0.705195761, 0.786124754,
+                            0.87860651, 0.907518244, 0.936410093, 0.994213676, 1, 0.97687459,
+                            0.942196417, 0.90173192, 0.849714661, 0.78033843, 0.734107494, 0.664731264,
+                            0.583802271, 0.520232248, 0.485554075, 0.427750492, 0.364160585, 0.289017916,
+                            0.225428009, 0.167624426, 0.144499016};
+//(Directly copied from Yihui's code ana.C)
+//Once we get a proper filter with non trivial wavelength dependence it will probably have to be put here
+
 void crystalana(int num_evtsmax, const char* inputfilename) {
 
 
@@ -135,6 +159,10 @@ std::cout<<std::endl;
       std::vector<float> nscintwavecutchan_avg[nchan]; //Scintillation photons below cutoff
       std::vector<float> number_of_bins_avg[nchan];
 
+      std::vector<float> filter[nchan];
+      std::vector<float> QE[nchan];
+      //Defined for all channels including the crystal and the air, of course it is for convenience but does not make much physical sense, so all the elements of those two channels will be set to 1 for multiplying i.e. no action
+
     for(int ievt=0;ievt<num_evt; ++ievt) {
       std::cout<<"event number is "<<ievt<<std::endl;
       int nbyte = b_ecal->GetEntry(ievt);
@@ -192,8 +220,8 @@ std::cout<<std::endl;
     {
      ncerwavechan[kchan].push_back((aecalhit->ncerwave)[j]);
      nscintwavechan[kchan].push_back((aecalhit->nscintwave)[j]);
-     number_of_bins[kchan].push_back(j*binsize + aecalhit->wavelenmin);
-     if(j<bincut && j>=0)
+     number_of_bins[kchan].push_back(j*binsize + aecalhit->wavelenmin); //lower wavelength of the j th bin
+     /*if(j<bincut && j>=0)
      {
       ncerwavecutchan[kchan].push_back(0); //'Empty' below the cutoff
       nscintwavecutchan[kchan].push_back((aecalhit->nscintwave)[j]);
@@ -202,9 +230,8 @@ std::cout<<std::endl;
      {
       ncerwavecutchan[kchan].push_back((aecalhit->ncerwave)[j]);
       nscintwavecutchan[kchan].push_back(0); //'Empty' above the cutoff 
-     }
+     }*/
     }    
-    std::cout<<"Pushed back"<< " "<< ijchan<<std::endl;
 	}
 
 
@@ -226,18 +253,17 @@ std::cout<<std::endl;
         {
          ncerwavechan_avg[k].push_back(ncerwavechan[k].at(j));
          nscintwavechan_avg[k].push_back(nscintwavechan[k].at(j));
-         std::cout<<"Pushed back successfully"<<std::endl;
 
-         ncerwavecutchan_avg[k].push_back(ncerwavecutchan[k].at(j));
-         nscintwavecutchan_avg[k].push_back(nscintwavecutchan[k].at(j));
+         /*ncerwavecutchan_avg[k].push_back(ncerwavecutchan[k].at(j));
+         nscintwavecutchan_avg[k].push_back(nscintwavecutchan[k].at(j));*/
          number_of_bins_avg[k].push_back(number_of_bins[k].at(j));
         }
         else if (ievt>0 &&ievt<num_evt) //i.e. the avg vector already has this size because this condition is necessarily occurring after the 'if' one above
         {
          ncerwavechan_avg[k].at(j) += ncerwavechan[k].at(j);
          nscintwavechan_avg[k].at(j) += nscintwavechan[k].at(j);
-         ncerwavecutchan_avg[k].at(j) += (ncerwavecutchan[k].at(j));
-         nscintwavecutchan_avg[k].at(j) += (nscintwavecutchan[k].at(j));
+         /*ncerwavecutchan_avg[k].at(j) += (ncerwavecutchan[k].at(j));
+         nscintwavecutchan_avg[k].at(j) += (nscintwavecutchan[k].at(j));*/
         
          //Don't change the number_of_bins_avg here
         }
@@ -280,6 +306,70 @@ std::cout<<std::endl;
 
     }  //end loop over events
     
+    
+    
+    for(int j=0;j<ncerwavechan_avg[0].size();j++) //Right now all sizes are the same = binsize, taken the channel 0
+    {
+     if (number_of_bins_avg[1].at(j) <= wavelencut) //Below 550 nm (UV SiPM side, so this is exclusively for scintillation)
+     {
+      filter[1].push_back(1.0);
+     }      
+     else if (number_of_bins_avg[1].at(j) > wavelencut)
+     {
+      filter[1].push_back(0.0);
+     }
+     
+     if (number_of_bins_avg[2].at(j) >= wavelencut) //Above 550 nm (RGB SiPM side, so this is exclusively for Cerenkov)
+     {
+      filter[2].push_back(1.0);
+     }      
+     else if (number_of_bins_avg[1].at(j) < wavelencut)
+     {
+      filter[2].push_back(0.0);
+     }
+     
+     filter[0].push_back(1.0);
+     filter[3].push_back(1.0);
+    }
+    
+      for(int j=0;j<ncerwavechan_avg[0].size();j++) //Right now all sizes are the same = binsize, taken the channel 0
+      {
+      int ent_UV = 22, ent_RGB = 28;
+      if(number_of_bins_avg[1].at(j) >= UV_sipm_QE_x[0] && number_of_bins_avg[1].at(j) < UV_sipm_QE_x[ent_UV]) //i.e. if it lies within the range of sensitivity of the UV SiPM
+      //1 less than actual size i.e. 23 because of usual indexing quirks (starts from 0)
+      {
+       for(int i=0;i<ent_UV;i++)
+       {
+        if (number_of_bins_avg[1].at(j) >= UV_sipm_QE_x[i] && number_of_bins_avg[1].at(j) < UV_sipm_QE_x[i + 1]) //Checking what 'bin' the wavelength lies in 
+        QE[1].push_back(0.43 * ((UV_sipm_QE_y[i + 1] - UV_sipm_QE_y[i]) * (number_of_bins_avg[1].at(j) - UV_sipm_QE_x[i]) / (UV_sipm_QE_x[i + 1] - UV_sipm_QE_x[i]) + UV_sipm_QE_y[i]));
+       }
+      } 
+       else 
+       {
+        QE[1].push_back(0.0);
+       }
+       
+       
+       
+      if(number_of_bins_avg[2].at(j) >= RGB_sipm_QE_x[0] && number_of_bins_avg[2].at(j) < RGB_sipm_QE_x[ent_RGB]) //i.e. if it lies within the range of sensitivity of the RGB SiPM
+      //1 less than actual size i.e. 29 because of usual indexing quirks (starts from 0)
+      {
+       for(int i=0;i<ent_RGB;i++)
+       {
+        if (number_of_bins_avg[2].at(j) >= RGB_sipm_QE_x[i] && number_of_bins_avg[2].at(j) < RGB_sipm_QE_x[i + 1]) //Checking what 'bin' the wavelength lies in
+        QE[2].push_back(0.325 * ((RGB_sipm_QE_y[i + 1] - RGB_sipm_QE_y[i]) * (number_of_bins_avg[2].at(j) - RGB_sipm_QE_x[i]) / (RGB_sipm_QE_x[i + 1] - RGB_sipm_QE_x[i]) + RGB_sipm_QE_y[i]));
+       }
+      } 
+       else 
+       {
+        QE[2].push_back(0.0);
+       }
+       
+       QE[0].push_back(1.0);
+       QE[3].push_back(1.0);
+      }
+
+
     for( int i=0;i<nchan;i++)
     {
      esumchan_avg[i] = esumchan_avg[i]/num_evt;
@@ -289,16 +379,23 @@ std::cout<<std::endl;
      {
       ncerwavechan_avg[i].at(j) = ncerwavechan_avg[i].at(j)/num_evt;
       nscintwavechan_avg[i].at(j) = nscintwavechan_avg[i].at(j)/num_evt;
-      ncerwavecutchan_avg[i].at(j) = ncerwavecutchan_avg[i].at(j)/num_evt;
-      nscintwavecutchan_avg[i].at(j) = nscintwavecutchan_avg[i].at(j)/num_evt;
+      /*ncerwavecutchan_avg[i].at(j) = ncerwavecutchan_avg[i].at(j)/num_evt;
+      nscintwavecutchan_avg[i].at(j) = nscintwavecutchan_avg[i].at(j)/num_evt;*/
+      
+      ncerwavecutchan_avg[i].push_back(ncerwavechan_avg[i].at(j)*filter[i].at(j));
+      nscintwavecutchan_avg[i].push_back(nscintwavechan_avg[i].at(j)*filter[i].at(j));
+      
+      ncerwavecutchan_avg[i].at(j) = ncerwavecutchan_avg[i].at(j)*QE[i].at(j);
+      nscintwavecutchan_avg[i].at(j) = nscintwavecutchan_avg[i].at(j)*QE[i].at(j);
+      
       ncercutchan_avg[i]+= ncerwavecutchan_avg[i].at(j);
       nscintcutchan_avg[i]+= nscintwavecutchan_avg[i].at(j);
      }
      std::cout<<"esum_avg ["<<ichan[i]<<"]="<<esumchan_avg[i]<<std::endl;
      std::cout<<"nscintillator_avg ["<<ichan[i]<<"]="<<nscintchan_avg[i]<<std::endl;
      std::cout<<"ncerenkov_avg ["<<ichan[i]<<"]="<<ncerchan_avg[i]<<std::endl;
-     std::cout<<"nscintillator_avg below cutoff ["<<ichan[i]<<"]="<<nscintcutchan_avg[i]<<std::endl;
-     std::cout<<"ncerenkov_avg above cutoff ["<<ichan[i]<<"]="<<ncercutchan_avg[i]<<std::endl;     
+     std::cout<<"nscintillator_avg below cutoff with QE["<<ichan[i]<<"]="<<nscintcutchan_avg[i]<<std::endl;
+     std::cout<<"ncerenkov_avg above cutoff with QE["<<ichan[i]<<"]="<<ncercutchan_avg[i]<<std::endl;     
     }
     
     float norm_cer = *max_element(ncerwavechan_avg[0].begin(), ncerwavechan_avg[0].end());
@@ -324,49 +421,94 @@ std::cout<<std::endl;
 
      for(int j=0;j<ncerwavechan_avg[2].size();j++)
      {
-      ncerwavechan_avg[2].at(j) = ncerwavechan_avg[2].at(j)/norm_cer_det/2;
-      nscintwavechan_avg[2].at(j) = nscintwavechan_avg[2].at(j)/norm_scint_det/2;
-      ncerwavecutchan_avg[2].at(j) = ncerwavecutchan_avg[2].at(j)/norm_cer_det/2;
-      nscintwavecutchan_avg[2].at(j) = nscintwavecutchan_avg[2].at(j)/norm_scint_det/2;
+      ncerwavechan_avg[2].at(j) = ncerwavechan_avg[2].at(j)/norm_cer_det/*/2*/;
+      nscintwavechan_avg[1].at(j) = nscintwavechan_avg[1].at(j)/norm_scint_det/*/2*/;
+      ncerwavecutchan_avg[2].at(j) = ncerwavecutchan_avg[2].at(j)/norm_cer_det/*/2*/;
+      nscintwavecutchan_avg[1].at(j) = nscintwavecutchan_avg[1].at(j)/norm_scint_det/*/2*/;
      }
      
-    TGraph* gcerwave_gen = new TGraph(ncerwavechan_avg[0].size(),&number_of_bins_avg[0][0],&ncerwavechan_avg[0][0]);
-    gcerwave_gen->SetTitle("Cerwave_gen");
-    TGraph* gcerwave_det = new TGraph(ncerwavechan_avg[1].size(),&number_of_bins_avg[2][0],&ncerwavechan_avg[2][0]);
+    /*TGraph* gcerwave_gen = new TGraph(ncerwavechan_avg[0].size(),&number_of_bins_avg[0][0],&ncerwavechan_avg[0][0]);
+    gcerwave_gen->SetTitle("Cerwave_gen");*/
+    TGraph* gcerwave_det = new TGraph(ncerwavechan_avg[2].size(),&number_of_bins_avg[2][0],&ncerwavechan_avg[2][0]);
     gcerwave_det->SetTitle("Cerwave_det");   
      
-    TGraph* gscintwave_gen = new TGraph(nscintwavechan_avg[0].size(),&number_of_bins_avg[0][0],&nscintwavechan_avg[0][0]);
-    gscintwave_gen->SetTitle("Scintwave_gen");
-    TGraph* gscintwave_det = new TGraph(nscintwavechan_avg[1].size(),&number_of_bins_avg[2][0],&nscintwavechan_avg[2][0]);
+    /*TGraph* gscintwave_gen = new TGraph(nscintwavechan_avg[0].size(),&number_of_bins_avg[0][0],&nscintwavechan_avg[0][0]);
+    gscintwave_gen->SetTitle("Scintwave_gen");*/
+    TGraph* gscintwave_det = new TGraph(nscintwavechan_avg[1].size(),&number_of_bins_avg[1][0],&nscintwavechan_avg[1][0]);
     gscintwave_det->SetTitle("Scintwave_det");
     
-    /*TGraph* gcerwave_gen = new TGraph(ncerwavecutchan_avg[0].size(),&number_of_bins_avg[0][0],&ncerwavecutchan_avg[0][0]);
-    gcerwave_gen->SetTitle("Cerwave_gen");
-    TGraph* gcerwave_det = new TGraph(ncerwavecutchan_avg[1].size(),&number_of_bins_avg[1][0],&ncerwavecutchan_avg[1][0]);
-    gcerwave_det->SetTitle("Cerwave_det");*/   
+    /*TGraph* gcerwave_gen_cut = new TGraph(ncerwavecutchan_avg[0].size(),&number_of_bins_avg[0][0],&ncerwavecutchan_avg[0][0]);
+    gcerwave_gen->SetTitle("Cerwave_gen with cutoff");*/
+    TGraph* gcerwave_det_cut = new TGraph(ncerwavecutchan_avg[2].size(),&number_of_bins_avg[2][0],&ncerwavecutchan_avg[2][0]);
+    gcerwave_det_cut->SetTitle("Cerwave_det with cutoff and QE");
      
-    /*TGraph* gscintwave_gen = new TGraph(nscintwavecutchan_avg[0].size(),&number_of_bins_avg[0][0],&nscintwavecutchan_avg[0][0]);
-    gscintwave_gen->SetTitle("Scintwave_gen");
-    TGraph* gscintwave_det = new TGraph(nscintwavecutchan_avg[1].size(),&number_of_bins_avg[1][0],&nscintwavecutchan_avg[1][0]);
-    gscintwave_det->SetTitle("Scintwave_det");*/ 
+    /*TGraph* gscintwave_gen_cut = new TGraph(nscintwavecutchan_avg[0].size(),&number_of_bins_avg[0][0],&nscintwavecutchan_avg[0][0]);
+    gscintwave_gen->SetTitle("Scintwave_gen with cutoff");*/
+    TGraph* gscintwave_det_cut = new TGraph(nscintwavecutchan_avg[1].size(),&number_of_bins_avg[1][0],&nscintwavecutchan_avg[1][0]);
+    gscintwave_det_cut->SetTitle("Scintwave_det with cutoff and QE"); 
     
+    TGraph* QE_Crystal = new TGraph(QE[0].size(),&number_of_bins_avg[0][0],&QE[0][0]);
+    QE_Crystal->SetTitle("QE for PbWO4 crystal");
+    TGraph* QE_Air_out = new TGraph(QE[3].size(),&number_of_bins_avg[3][0],&QE[3][0]);
+    QE_Air_out->SetTitle("QE for Air outside");
+    
+    TGraph* QE_UV = new TGraph(QE[1].size(),&number_of_bins_avg[1][0],&QE[1][0]);
+    QE_UV->SetTitle("QE for Left killMedia (UV)");
+    TGraph* QE_RGB = new TGraph(QE[2].size(),&number_of_bins_avg[2][0],&QE[2][0]);
+    QE_RGB->SetTitle("QE for Right killMedia (RGB)");  
+    
+    
+    TGraph* filter_Crystal = new TGraph(filter[0].size(),&number_of_bins_avg[0][0],&filter[0][0]);
+    filter_Crystal->SetTitle("filter for PbWO4 crystal");
+    TGraph* filter_Air_out = new TGraph(filter[3].size(),&number_of_bins_avg[3][0],&filter[3][0]);
+    filter_Air_out->SetTitle("filter for Air outside");
+    
+    TGraph* filter_UV = new TGraph(filter[1].size(),&number_of_bins_avg[1][0],&filter[1][0]);
+    filter_UV->SetTitle("filter for Left killMedia (UV)");
+    TGraph* filter_RGB = new TGraph(filter[2].size(),&number_of_bins_avg[2][0],&filter[2][0]);
+    filter_RGB->SetTitle("filter for Right killMedia (RGB)");  
+
     TMultiGraph* cerscint = new TMultiGraph();
     cerscint->SetName("cer_scint");
     TCanvas *c1 = new TCanvas("c1","Graph Draw Options", 200,10,600,400); //represents coordinates of start and end points of canvas
-    cerscint -> Add(gcerwave_gen);
+    //cerscint -> Add(gcerwave_gen);
     cerscint -> Add(gcerwave_det);    
-    cerscint -> Add(gscintwave_gen);
+    //cerscint -> Add(gscintwave_gen);
     cerscint -> Add(gscintwave_det);
-    gcerwave_gen->SetLineColor(kRed);
+    cerscint -> Add(gcerwave_det_cut);
+    cerscint -> Add(gscintwave_det_cut);
+    //gcerwave_gen->SetLineColor(kRed);
     gcerwave_det->SetLineColor(kBlack);
-    gscintwave_gen->SetLineColor(kBlue);
-    gscintwave_det->SetLineColor(kYellow);
-
+    //gscintwave_gen->SetLineColor(kBlue);
+    gscintwave_det->SetLineColor(kOrange);
+    gcerwave_det_cut->SetLineColor(kRed);
+    gscintwave_det_cut->SetLineColor(kBlue);
+    
+    /*cerscint -> Add(QE_Crystal);
+    cerscint -> Add(QE_Air_out);
+    cerscint -> Add(QE_UV);
+    cerscint -> Add(QE_RGB);
+    QE_Crystal->SetLineColor(kRed);
+    QE_Air_out->SetLineColor(kBlack);
+    QE_UV->SetLineColor(kBlue);
+    QE_RGB->SetLineColor(kOrange);*/
+    
+    /*cerscint -> Add(filter_Crystal);
+    cerscint -> Add(filter_Air_out);
+    cerscint -> Add(filter_UV);
+    cerscint -> Add(filter_RGB);
+    //filter_Crystal->SetMarkerColor(kRed);
+    //filter_Air_out->SetMarkerColor(kBlack);
+    //filter_UV->SetLineColor(kBlue);
+    filter_UV->SetMarkerColor(kBlue);
+    //filter_RGB->SetLineColor(kOrange);
+    filter_RGB->SetMarkerColor(kOrange);*/
+     
     cerscint -> Draw("AC"); //Draw with axes, curve
     TH1F* hist = cerscint->GetHistogram(); //Done purely for tweaking title, axes, etc.
     hist->GetXaxis()->SetTitle("Wavelength (in nm)");
     hist->GetYaxis()->SetTitle("Normalized counts");
-    hist->SetTitle("C and S produced in crystal and detected for right killMedia)");
+    hist->SetTitle("C (right killMedia) and S (left killMedia) with cutoff and QE)");
     c1 -> BuildLegend();
     
   }  // end if no events
