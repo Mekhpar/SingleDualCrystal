@@ -71,7 +71,7 @@ namespace dd4hep {
     template <> bool Geant4SensitiveAction<DualCrystalCalorimeterSD>::process(const G4Step* step,G4TouchableHistory* /*hist*/ ) {
 
 
-      bool SCEPRINT=(SCECOUNT<10000);
+      bool SCEPRINT=(SCECOUNT<100);
       //if(SCEPRINT) std::cout<<"scecount is "<<SCECOUNT<<" print is "<<SCEPRINT<<std::endl;
 
 
@@ -158,54 +158,44 @@ namespace dd4hep {
 	SCECOUNT+=1;
 	//	if(SCEPRINT) std::cout<<"optical photon"<<std::endl;
 
-	//bool OptN = (track->GetCreatorProcess()->G4VProcess::GetProcessName() == "CerenkovPhys")||(track->GetCreatorProcess()->G4VProcess::GetProcessName() == "ScintillationPhys");
+	bool OptN = (track->GetCreatorProcess()->G4VProcess::GetProcessName() == "CerenkovPhys")||(track->GetCreatorProcess()->G4VProcess::GetProcessName() == "ScintillationPhys");
 
 	//if(track->GetParentID()!=1) SCEPRINT=1;
 	if( (track->GetCreatorProcess()->G4VProcess::GetProcessName() != "CerenkovPhys")&&(track->GetCreatorProcess()->G4VProcess::GetProcessName() != "ScintillationPhys") ) SCEPRINT=1;
-
-	if(SCEPRINT) {
-	  std::cout<<"     SCECOUNT="<<SCECOUNT<<std::endl;
-	
-	  std::cout<<"     will robinson have photon "<<track->GetCreatorProcess()->G4VProcess::GetProcessName() <<std::endl;
-	  std::cout<<"     photon mother is "<<track->GetParentID()<<std::endl;
-	  std::cout<<"     photon material is "<<(track->GetMaterial())->GetName()<<std::endl;
-	  std::cout<<"     photon creator process is "<<(track->GetCreatorProcess())->GetProcessName()<<std::endl;
-	  std::cout<<"     photon  process  type is "<<(track->GetCreatorProcess())->GetProcessType()<<std::endl;
-	  std::cout<<"     photon sub process is "<<(track->GetCreatorProcess())->GetProcessSubType()<<std::endl;
-	  std::cout<<"     photon current step number is "<<track->GetCurrentStepNumber()<<std::endl;
-    std::cout<<"     photon pre position is: x coordinate- "<<step->GetPreStepPoint()->GetPosition().x() <<" y coordinate- "<<step->GetPreStepPoint()->GetPosition().y()<<" z coordinate- "<<step->GetPreStepPoint()->GetPosition().z()<<std::endl;
-    std::cout<<"     photon post position is: x coordinate- "<<step->GetPostStepPoint()->GetPosition().x() <<" y coordinate- "<<step->GetPostStepPoint()->GetPosition().y() <<" z coordinate- "<<step->GetPostStepPoint()->GetPosition().z()<<std::endl;    
-	//(track->GetCreatorProcess())->DumpInfo();
-	  std::cout<<"     photon energy is "<<track->GetTotalEnergy()/eV<<std::endl;
-	  std::cout<<"     photon wavelength is "<<fromEvToNm(track->GetTotalEnergy()/eV)<<std::endl;
-	  std::cout<<"     number of cherenkov is "<<hit->ncerenkov<<std::endl;
-	  std::cout<<"     number of scintillation is "<<hit->nscintillator<<std::endl;
-	}
 
 	float wavelength=fromEvToNm(track->GetTotalEnergy()/eV);
 	int ibin=-1;
 	float binsize=(hit->wavelenmax-hit->wavelenmin)/hit->nbin;
 	ibin = (wavelength-hit->wavelenmin)/binsize;
+  int phstep = track->GetCurrentStepNumber();
 	
 
 	if ( track->GetCreatorProcess()->G4VProcess::GetProcessName() == "CerenkovPhys")
   {
 	  if(SCEPRINT) std::cout<<" found cerenkov photon"<<std::endl;
-	  if(((track->GetMaterial())->GetName())=="killMedia") 
+	  std::string amedia = ((track->GetMaterial())->GetName());
+    if(amedia.find("kill")!=std::string::npos)     
+	  //if(((track->GetMaterial())->GetName())=="killMedia") 
 	    { 
+	      if(SCEPRINT) std::cout<<"killing photon"<<std::endl;
+        if(phstep>1)// don't count photons created in kill media i.e. with step number 1 because they are unphysical
+       {
 	      hit->ncerenkov+=1;
 	      if(ibin>-1&&ibin<hit->nbin) ((hit->ncerwave).at(ibin))+=1;
-	      track->SetTrackStatus(fStopAndKill);}
-	  else {
+       }
+	      track->SetTrackStatus(fStopAndKill); //kill ALL killMedia photons after the first step, regardless of whether they were created there or not (to avoid overcounting)
+     }
+	  
+    else {
 	    //if( (track->GetParentID()==1)&&(track->GetCurrentStepNumber()==1)  ) hit->ncerenkov+=1;
-         	    if( (track->GetCurrentStepNumber()==1)  )
+         	    if( (phstep==1)  )
               {
                hit->ncerenkov+=1;
                if(ibin>-1&&ibin<hit->nbin) ((hit->ncerwave).at(ibin))+=1;
               }
 	  }
            //if(((track->GetMaterial())->GetName())=="Air" && step->GetPreStepPoint()->GetPosition() != step->GetPostStepPoint()->GetPosition())
-          if(((track->GetMaterial())->GetName())=="Air" && (fabs(step->GetPreStepPoint()->GetPosition().x() - step->GetPostStepPoint()->GetPosition().x())>0.1 || fabs(step->GetPreStepPoint()->GetPosition().y() - step->GetPostStepPoint()->GetPosition().y())>0.1 || fabs(step->GetPreStepPoint()->GetPosition().z() - step->GetPostStepPoint()->GetPosition().z())>0.1))
+          if(/*((track->GetMaterial())->GetName())=="Air"*/amedia.find("Air")!=std::string::npos && (fabs(step->GetPreStepPoint()->GetPosition().x() - step->GetPostStepPoint()->GetPosition().x())>0.1 || fabs(step->GetPreStepPoint()->GetPosition().y() - step->GetPostStepPoint()->GetPosition().y())>0.1 || fabs(step->GetPreStepPoint()->GetPosition().z() - step->GetPostStepPoint()->GetPosition().z())>0.1))
           {
            hit->ncerenkov+=1;
            //track->SetTrackStatus(fStopAndKill); //So all the photons go to air including the ones that suffer at least one TIR and are counted in Air and aborted
@@ -217,22 +207,30 @@ namespace dd4hep {
          
 	else if (  track->GetCreatorProcess()->G4VProcess::GetProcessName() == "ScintillationPhys"  )
   {
-          if(SCEPRINT) std::cout<<"     scintillation photon"<<std::endl;
-          if(((track->GetMaterial())->GetName())=="killMedia") 
+     if(SCEPRINT) std::cout<<"     scintillation photon"<<std::endl;
+     std::string amedia = ((track->GetMaterial())->GetName());
+     if(amedia.find("kill")!=std::string::npos)
+     //if(((track->GetMaterial())->GetName())=="killMedia") 
 	    {
-	      hit->nscintillator+=1;
-	      if((ibin>-1)&&(ibin<hit->nbin)) ((hit->nscintwave).at(ibin))+=1;
-	      track->SetTrackStatus(fStopAndKill);}
+	      if(SCEPRINT) std::cout<<"killing photon"<<std::endl;
+	      if(phstep>1) // don't count photons created in kill media i.e. with step number 1 because they are unphysical      
+        {
+	       hit->nscintillator+=1;
+	       if((ibin>-1)&&(ibin<hit->nbin)) ((hit->nscintwave).at(ibin))+=1;
+        }
+       track->SetTrackStatus(fStopAndKill); //kill ALL killMedia photons after the first step, regardless of whether they were created there or not (to avoid overcounting)
+       }
+        
 	  else {
 	    //if( (track->GetParentID()==1)&&(track->GetCurrentStepNumber()==1) ) hit->nscintillator+=1; 
-         	    if( (track->GetCurrentStepNumber()==1) ) 
+         	    if( (phstep==1) ) 
               {
                hit->nscintillator+=1;
                if((ibin>-1)&&(ibin<hit->nbin)) ((hit->nscintwave).at(ibin))+=1;
               }
 	  }
           //if(((track->GetMaterial())->GetName())=="Air" && step->GetPreStepPoint()->GetPosition() != step->GetPostStepPoint()->GetPosition())
-          if(((track->GetMaterial())->GetName())=="Air" && (fabs(step->GetPreStepPoint()->GetPosition().x() - step->GetPostStepPoint()->GetPosition().x())>0.1 || fabs(step->GetPreStepPoint()->GetPosition().y() - step->GetPostStepPoint()->GetPosition().y())>0.1 || fabs(step->GetPreStepPoint()->GetPosition().z() - step->GetPostStepPoint()->GetPosition().z())>0.1))
+          if(/*((track->GetMaterial())->GetName())=="Air"*/amedia.find("Air")!=std::string::npos && (fabs(step->GetPreStepPoint()->GetPosition().x() - step->GetPostStepPoint()->GetPosition().x())>0.1 || fabs(step->GetPreStepPoint()->GetPosition().y() - step->GetPostStepPoint()->GetPosition().y())>0.1 || fabs(step->GetPreStepPoint()->GetPosition().z() - step->GetPostStepPoint()->GetPosition().z())>0.1))
 
           {
            hit->nscintillator+=1;
@@ -245,6 +243,28 @@ namespace dd4hep {
           //track->SetTrackStatus(fStopAndKill);
           //return false;
 	}
+ 
+ 	if(SCEPRINT) {
+	  std::cout<<"     SCECOUNT="<<SCECOUNT<<std::endl;
+	
+	  std::cout<<"     will robinson have photon "<<track->GetCreatorProcess()->G4VProcess::GetProcessName() <<std::endl;
+	  std::cout<<"     photon mother is "<<track->GetParentID()<<std::endl;
+	  std::cout<<"     photon material is "<<(track->GetMaterial())->GetName()<<std::endl;
+	  std::cout<<"     photon creator process is "<<(track->GetCreatorProcess())->GetProcessName()<<std::endl;
+	  std::cout<<"     photon  process  type is "<<(track->GetCreatorProcess())->GetProcessType()<<std::endl;
+	  std::cout<<"     photon sub process is "<<(track->GetCreatorProcess())->GetProcessSubType()<<std::endl;
+	  std::cout<<"     photon current step number is "<<track->GetCurrentStepNumber()<<std::endl;
+    std::cout<<"     photon pre position is: x coordinate- "<<step->GetPreStepPoint()->GetPosition().x() <<" y coordinate- "<<step->GetPreStepPoint()->GetPosition().y()<<" z coordinate- "<<step->GetPreStepPoint()->GetPosition().z()<<std::endl;
+    std::cout<<"     photon post position is: x coordinate- "<<step->GetPostStepPoint()->GetPosition().x() <<" y coordinate- "<<step->GetPostStepPoint()->GetPosition().y() <<" z coordinate- "<<step->GetPostStepPoint()->GetPosition().z()<<std::endl;
+ 	  std::cout<<"     the pre volume name is "<<thePrePVName<<std::endl;
+	  std::cout<<"     the post volume name is "<<thePostPVName<<std::endl;
+	//(track->GetCreatorProcess())->DumpInfo();
+	  std::cout<<"     photon energy is "<<track->GetTotalEnergy()/eV<<std::endl;
+	  std::cout<<"     photon wavelength is "<<fromEvToNm(track->GetTotalEnergy()/eV)<<std::endl;
+	  std::cout<<"     number of cherenkov is "<<hit->ncerenkov<<std::endl;
+	  std::cout<<"     number of scintillation is "<<hit->nscintillator<<std::endl;
+	}
+
 
       }
 
@@ -255,10 +275,10 @@ namespace dd4hep {
         hit->energyDeposit += contrib.deposit;
         hit->truth.emplace_back(contrib);
 
-        mark(h.track);
         //return true;
       }
 
+        mark(h.track);
 	
       return true;
 
