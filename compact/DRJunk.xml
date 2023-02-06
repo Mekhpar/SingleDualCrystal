@@ -296,6 +296,52 @@
       3.54241*eV 0.
       4.13281*eV 0.
     "/>
+
+    <matrix name="scintFast_PbWO4" coldim="2" values="
+      1.1*eV 0.
+      1.37760*eV 0.
+      1.45864*eV 0.
+      1.54980*eV 0.
+      1.65312*eV 0.
+      1.71013*eV 0.
+      1.77120*eV 0.
+      1.83680*eV 0.
+      1.90745*eV 0.
+      1.98375*eV 0.
+      2.14717*eV 0.0304
+      2.17911*eV 0.0334
+      2.21947*eV 0.0426
+      2.25747*eV 0.0638
+      2.29281*eV 0.0912
+      2.32516*eV 0.1185
+      2.38834*eV 0.1702
+      2.43690*eV 0.2310
+      2.48748*eV 0.3069
+      2.54020*eV 0.4195
+      2.57493*eV 0.4924
+      2.60547*eV 0.5653
+      2.64732*eV 0.6444
+      2.71269*eV 0.7872
+      2.75233*eV 0.8511
+      2.79314*eV 0.9179
+      2.83519*eV 0.9514
+      2.88483*eV 0.9878
+      2.94936*eV 1.
+      2.99628*eV 0.9757
+      3.09475*eV 0.8815
+      3.13151*eV 0.8419
+      3.15398*eV 0.8055
+      3.17678*eV 0.7660
+      3.19992*eV 0.7295
+      3.23923*eV 0.6535
+      3.27138*eV 0.5714
+      3.30417*eV 0.4894
+      3.37178*eV 0.3708
+      3.41545*eV 0.2979
+      3.55354*eV 0.1915
+      4.13281*eV 0.      
+      
+     "/>
     
     <matrix name="AbsLen_PbWO4" coldim="2" values="
     1*eV 26.41170567*cm
@@ -403,8 +449,8 @@
     <fraction n="0.14063942" ref="O"/>
     <property name="RINDEX"        ref="RINDEX__PbWO4"/>
       <property name="ABSLENGTH" ref="AbsLen_PbWO4"/>
-      <property name="FASTCOMPONENT" ref="scintFast_PS"/>
-      <constant name="SCINTILLATIONYIELD" value="0.155/keV"/>
+      <property name="FASTCOMPONENT" ref="scintFast_PbWO4"/>
+      <constant name="SCINTILLATIONYIELD" value="0.45/keV"/>
       <constant name="FASTTIMECONSTANT" value="2.8*ns"/>
       <constant name="RESOLUTIONSCALE" value="1."/>
   </material>
