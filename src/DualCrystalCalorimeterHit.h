@@ -27,6 +27,7 @@ typedef ROOT::Math::XYZVector Direction;
 namespace CalVision {
 
     const int wavelengthnbin=1000;
+    //const int timebin = 2000;
 
   /// This is the hit definition.
   /** I took here the same definition of the default Geant4Tracker class,
@@ -55,7 +56,12 @@ namespace CalVision {
     int nbin=wavelengthnbin;
     std::array<int,wavelengthnbin>  ncerwave;
     std::array<int,wavelengthnbin> nscintwave;
-
+    
+    /*float timemin=10;
+    float timemax=1000;
+    int nbin_t=timebin;
+    std::array<int,timebin> ncertime;
+    std::array<int,timebin> nscinttime;*/
 
 
   public:
