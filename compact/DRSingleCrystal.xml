@@ -289,8 +289,7 @@
     3.5*eV 0*cm
     
     "/>    
-
-
+    
     </properties>
 
 
@@ -354,16 +353,6 @@
       <constant name="FASTTIMECONSTANT" value="2.8*ns"/>
       <constant name="RESOLUTIONSCALE" value="1."/>
   </material>
-
-
-
-
-
-
-
-
-  
-
 
 </materials>
 
