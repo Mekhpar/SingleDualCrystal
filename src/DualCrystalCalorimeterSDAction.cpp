@@ -71,7 +71,7 @@ namespace dd4hep {
     template <> bool Geant4SensitiveAction<DualCrystalCalorimeterSD>::process(const G4Step* step,G4TouchableHistory* /*hist*/ ) {
 
 
-      bool SCEPRINT=(SCECOUNT<100);
+      bool SCEPRINT=(SCECOUNT<10000);
       //if(SCEPRINT) std::cout<<"scecount is "<<SCECOUNT<<" print is "<<SCEPRINT<<std::endl;
 
 
@@ -165,8 +165,14 @@ namespace dd4hep {
 
 	float wavelength=fromEvToNm(track->GetTotalEnergy()/eV);
 	int ibin=-1;
-	float binsize=(hit->wavelenmax-hit->wavelenmin)/hit->nbin;
+	float binsize = (hit->wavelenmax-hit->wavelenmin)/hit->nbin;
 	ibin = (wavelength-hit->wavelenmin)/binsize;
+
+  /*float tof=step->GetPreStepPoint()->GetGlobalTime();
+  int ibin_t=-1;
+  float binsize_t = (hit->timemax-hit->timemin)/hit->nbin_t;
+  ibin_t = (tof-hit->timemin)/binsize_t;*/
+  
   int phstep = track->GetCurrentStepNumber();
 	
 
@@ -182,6 +188,7 @@ namespace dd4hep {
        {
 	      hit->ncerenkov+=1;
 	      if(ibin>-1&&ibin<hit->nbin) ((hit->ncerwave).at(ibin))+=1;
+        //if(ibin_t>-1&&ibin_t<hit->nbin_t) ((hit->ncertime).at(ibin_t))+=1; //Time of arrival at killMedia for Cerenkov
        }
 	      track->SetTrackStatus(fStopAndKill); //kill ALL killMedia photons after the first step, regardless of whether they were created there or not (to avoid overcounting)
      }
@@ -192,6 +199,7 @@ namespace dd4hep {
               {
                hit->ncerenkov+=1;
                if(ibin>-1&&ibin<hit->nbin) ((hit->ncerwave).at(ibin))+=1;
+               //if(ibin_t>-1&&ibin_t<hit->nbin_t) ((hit->ncertime).at(ibin_t))+=1; //Time of production (mainly in crystal) for Cerenkov
               }
 	  }
            //if(((track->GetMaterial())->GetName())=="Air" && step->GetPreStepPoint()->GetPosition() != step->GetPostStepPoint()->GetPosition())
@@ -207,7 +215,7 @@ namespace dd4hep {
          
 	else if (  track->GetCreatorProcess()->G4VProcess::GetProcessName() == "ScintillationPhys"  )
   {
-     if(SCEPRINT) std::cout<<"     scintillation photon"<<std::endl;
+     if(SCEPRINT) std::cout<<" found scintillation photon"<<std::endl;
      std::string amedia = ((track->GetMaterial())->GetName());
      if(amedia.find("kill")!=std::string::npos)
      //if(((track->GetMaterial())->GetName())=="killMedia") 
@@ -217,6 +225,7 @@ namespace dd4hep {
         {
 	       hit->nscintillator+=1;
 	       if((ibin>-1)&&(ibin<hit->nbin)) ((hit->nscintwave).at(ibin))+=1;
+         //if(ibin_t>-1&&ibin_t<hit->nbin_t) ((hit->nscinttime).at(ibin_t))+=1; //Time of arrival at killMedia for scintillation 
         }
        track->SetTrackStatus(fStopAndKill); //kill ALL killMedia photons after the first step, regardless of whether they were created there or not (to avoid overcounting)
        }
@@ -227,6 +236,7 @@ namespace dd4hep {
               {
                hit->nscintillator+=1;
                if((ibin>-1)&&(ibin<hit->nbin)) ((hit->nscintwave).at(ibin))+=1;
+               //if(ibin_t>-1&&ibin_t<hit->nbin_t) ((hit->nscinttime).at(ibin_t))+=1; //Time of production (mainly in crystal) for scintillation
               }
 	  }
           //if(((track->GetMaterial())->GetName())=="Air" && step->GetPreStepPoint()->GetPosition() != step->GetPostStepPoint()->GetPosition())
