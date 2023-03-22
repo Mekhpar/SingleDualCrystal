@@ -18,7 +18,7 @@ void print_vector_s(vector<string> const &ptr) //function to print a vector of s
 void Read_spew()
 {
  ifstream file;
- file.open("45_0109_1.txt");
+ file.open("45_0210_1.txt");
  
  char output[500];
  vector<string> output_list;
@@ -59,11 +59,12 @@ int i=0; //counting variable for how many photons are produced in killMedia
 
 for(unsigned int j=0; j<output_list.size(); j++)
 {
- if (output_list.at(j)=="Silicone_gap" //&& output_list.at(j-14)=="166" //only left kill media
+ if (output_list.at(j)=="GG475_filter" //&& output_list.at(j-14)=="166" //only left kill media
  //&& output_list.at(j-4)=="1"//Parent ID is not 1
  )
  {
-  cout << output_list.at(j-14)<< endl;
+  cout << output_list.at(j-17)<< endl;
+  //cout << output_list.at(j-19)<< endl;
   i+=1;
  }
 }
