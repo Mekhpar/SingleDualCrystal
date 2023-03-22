@@ -25,14 +25,14 @@
         url="https://twiki.cern.ch/twiki/bin/view/CLIC/xxx"
         status="development"
         version="$Id: compact.xml 1374 2014-11-05 10:49:55Z markus.frank@cern.ch $">
-    <comment>The compact format for the SCEPCAL IDEA</comment>        
+    <comment>The compact format for the SCEPCAL IDEA</comment>
   </info>
 
 
- 
+
   <properties>
-    <matrix name="RINDEX__Air" coldim="2" values="  
-              2.034*eV 1. 
+    <matrix name="RINDEX__Air" coldim="2" values="
+              2.034*eV 1.
               2.068*eV 1.
               2.103*eV 1.
               2.139*eV 1.
@@ -65,7 +65,7 @@
               4.002*eV 1.
               4.136*eV 1.
     "/>
-    <matrix name="RINDEX__PbWO4" coldim="2" values="  
+    <matrix name="RINDEX__PbWO4" coldim="2" values="
      1.0*eV  2.19103
      1.1*eV  2.19414
      1.2*eV  2.19762
@@ -595,9 +595,9 @@
 
 
 
-  
+
   <!-- We model vakuum just as very thin air -->
-  <material name="Vacuum">  
+  <material name="Vacuum">
     <D type="density" unit="g/cm3" value="0.0000000001" />
     <fraction n="0.754" ref="N"/>
     <fraction n="0.234" ref="O"/>
@@ -673,12 +673,12 @@
     <fraction n="0.65" ref="C"/>
     <fraction n="0.35" ref="Epoxy"/>
   </material>
-  
+
   <material name="CarbonFiber_50D">
     <D type="density" value="0.75" unit="g/cm3"/>
     <fraction n="0.65" ref="C"/>
     <fraction n="0.35" ref="Epoxy"/>
-  </material>  
+  </material>
 
   <material name="Rohacell31">
     <D type="density" value="0.032" unit="g/cm3"/>
@@ -687,14 +687,14 @@
     <composite n="2" ref="O"/>
     <composite n="1" ref="N"/>
   </material>
-  
+
   <material name="Rohacell31_50D">
     <D type="density" value="0.016" unit="g/cm3"/>
     <composite n="9" ref="C"/>
     <composite n="13" ref="H"/>
     <composite n="2" ref="O"/>
     <composite n="1" ref="N"/>
-  </material>  
+  </material>
 
   <material name="RPCGasDefault" state="gas">
     <D type="density" value="0.0037" unit="g/cm3"/>
@@ -786,7 +786,7 @@
 </materials>
 
 
-  
+
   <define>
     <include ref="SCEPCALConstants.xml"/>
   </define>
@@ -820,7 +820,7 @@
 
 
   <comment>EM Calorimeters</comment>
-  <include ref="SCEPCAL_ECAL.xml"/> 
+  <include ref="SCEPCAL_ECAL.xml"/>
 
 
 
