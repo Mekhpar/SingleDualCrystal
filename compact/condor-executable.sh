@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /data/users/eno/CalVision/dd4hep/DD4hep/examples/SingleDualCrystal/compact/
+cd /data/users/mparanjp/DD4hep_test/DD4hep/examples/SingleDualCrystal/compact/
 
 START_TIME=`/bin/date`
 echo "started at $START_TIME"
@@ -8,16 +8,17 @@ echo "started at $START_TIME"
 
 # setup software environment at UMD
 #
+
 source /cvmfs/sft.cern.ch/lcg/views/LCG_101/x86_64-centos7-gcc11-opt/setup.sh
 echo "ran setup"
-source  /data/users/eno/CalVision/dd4hep/DD4hep/bin/thisdd4hep.sh
+source  /data/users/mparanjp/DD4hep_test/DD4hep/bin/thisdd4hep.sh
 echo "ran thisdd4hep"
 #
-# run 
+# run
 #
 
 
-ddsim --steeringFile /home/eno/CalVision/dd4hep/DD4hep/examples/SingleDualCrystal/compact/SCEPCALsteering.py --compact /home/eno/CalVision/dd4hep/DD4hep/examples/SingleDualCrystal/compact/DRSingleCrystal.xml --runType batch --part.userParticleHandler='' -G --gun.position="0.,10.,0." --gun.direction "0 -1 0" --gun.energy "1*GeV" --gun.particle="mu-" --gun.distribution=uniform -N 50 -O out.root >& haha.log
+ddsim --steeringFile /data/users/mparanjp/DD4hep_test/DD4hep/examples/SingleDualCrystal/compact/junkst2.py --compact /data/users/mparanjp/DD4hep_test/DD4hep/examples/SingleDualCrystal/compact/DR_e-.xml --runType batch --part.userParticleHandler='' -G --gun.position="0.,-30.,-64.33" --gun.direction "0 1 2.144" --gun.energy "10*GeV" --gun.particle="e-" -N 100 -O Root_files/PbWO4_e-/10_GeV/out_65_0309.root >& out_cndr_65.log
 
 exitcode=$?
 
