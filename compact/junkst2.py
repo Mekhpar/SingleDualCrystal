@@ -466,4 +466,3 @@ def setupCerenkovScint(kernel):
 
      return None
 SIM.physics.setupUserPhysics(setupCerenkovScint)
-
