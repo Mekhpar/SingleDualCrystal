@@ -53,8 +53,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   std::cout<<"half width zmax are "<<hwidth<<" "<<hzmax<<std::endl;
 
   OpticalSurfaceManager surfMgr = description.surfaceManager();
-  OpticalSurface cryS  = surfMgr.opticalSurface("/world/"+det_name+"#mirrorSurface");
-
+  //OpticalSurface cryS  = surfMgr.opticalSurface("/world/"+det_name+"#mirrorSurface");
+  OpticalSurface cryS  = surfMgr.opticalSurface("/world/E_PbWO4#mirrorSurface");
   // three structures, volumes, placedvolumes, and detelements
   // volumes need a setVisAttribute
   // DetElements. you can have volumes inherit attrivutesby setting them here
@@ -99,6 +99,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   DetElement tower_det(t_name,det_id);  // detector element for a tower
   towerVol.setSensitiveDetector(sens);
 
+  //PlacedVolume slice_phv_crys;
+  //PlacedVolume slice_phv_main;
     // Loop over the sets of layer elements in the detector.
   double z_bottoml  = -hzmax;
   int l_num = 1;
@@ -162,8 +164,6 @@ for(xml_coll_t si(x_layer,_U(slice)); si; ++si)
 	PlacedVolume slice_phv = l_vol.placeVolume(s_vol,s_pos);
 	slice_phv.addPhysVolID("slice", s_num);
 	slice.setPlacement(slice_phv);
-          // Increment Z position of slice.
-
 	z_bottoms2 += 2.*s_hzthick;
 
           // Increment slice number.
@@ -176,12 +176,12 @@ for(xml_coll_t si(x_layer,_U(slice)); si; ++si)
 int s_num_y_1 = s_num; //Whatever this maximum value of s_num is after the previous loop, increment that so there is no overlap
 double y_bottoms2_1=hwidth;  
 
-for(xml_coll_t si_y_1(x_layer,_U(slice_y)); si_y_1; ++si_y_1)  
+for(xml_coll_t si_y_1(x_layer,_U(shape)); si_y_1; ++si_y_1)  
 {
 	std::cout<<" with slice "<<s_num_y_1<<std::endl;
-	xml_comp_t x_slice_y_1 = si_y_1;
+	xml_comp_t x_shape_1 = si_y_1;
 	string     s_name_y_1  = _toString(s_num_y_1,"slice%d");
-	double     s_hzthick_y_1 = x_slice_y_1.thickness()/2.;
+	double     s_hzthick_y_1 = x_shape_1.thickness()/2.;
 	std::cout<<" with half  thickness "<<s_hzthick_y_1<<std::endl;
 
 	double y_mids2_1 = y_bottoms2_1 + s_hzthick_y_1;
@@ -192,14 +192,14 @@ for(xml_coll_t si_y_1(x_layer,_U(slice_y)); si_y_1; ++si_y_1)
 	dd4hep::Box s_box(0.6/2,s_hzthick_y_1,0.6/2);
 
 
-	dd4hep::Volume     s_vol(s_name_y_1,s_box,description.material(x_slice_y_1.materialStr()));
+	dd4hep::Volume     s_vol(s_name_y_1,s_box,description.material(x_shape_1.materialStr()));
 	DetElement slice(layer,s_name_y_1,det_id);
 
-	if ( x_slice_y_1.isSensitive() ) {
+	if ( x_shape_1.isSensitive() ) {
 		s_vol.setSensitiveDetector(sens);
           }
-	std::cout<<"          slice visstr is "<<x_slice_y_1.visStr()<<std::endl;
-	slice.setAttributes(description,s_vol,x_slice_y_1.regionStr(),x_slice_y_1.limitsStr(),x_slice_y_1.visStr());
+	std::cout<<"          slice visstr is "<<x_shape_1.visStr()<<std::endl;
+	slice.setAttributes(description,s_vol,x_shape_1.regionStr(),x_shape_1.limitsStr(),x_shape_1.visStr());
 
           // Slice placement.
 	PlacedVolume slice_phv = l_vol.placeVolume(s_vol,s_pos);
@@ -217,12 +217,12 @@ for(xml_coll_t si_y_1(x_layer,_U(slice_y)); si_y_1; ++si_y_1)
 int s_num_y_2 = s_num_y_1; //Whatever this maximum value of s_num is after the previous loop, increment that so there is no overlap
 double y_bottoms2_2=hwidth;  
 
-for(xml_coll_t si_y_2(x_layer,_U(slice_y)); si_y_2; ++si_y_2)  
+for(xml_coll_t si_y_2(x_layer,_U(shape)); si_y_2; ++si_y_2)  
 {
 	std::cout<<" with slice "<<s_num_y_2<<std::endl;
-	xml_comp_t x_slice_y_2 = si_y_2;
+	xml_comp_t x_shape_2 = si_y_2;
 	string     s_name_y_2  = _toString(s_num_y_2,"slice%d");
-	double     s_hzthick_y_2 = x_slice_y_2.thickness()/2.;
+	double     s_hzthick_y_2 = x_shape_2.thickness()/2.;
 	std::cout<<" with half  thickness "<<s_hzthick_y_2<<std::endl;
 
 	double y_mids2_2 = y_bottoms2_2 + s_hzthick_y_2;
@@ -233,14 +233,14 @@ for(xml_coll_t si_y_2(x_layer,_U(slice_y)); si_y_2; ++si_y_2)
 	dd4hep::Box s_box(0.6/2,s_hzthick_y_2,0.6/2);
 
 
-	dd4hep::Volume     s_vol(s_name_y_2,s_box,description.material(x_slice_y_2.materialStr()));
+	dd4hep::Volume     s_vol(s_name_y_2,s_box,description.material(x_shape_2.materialStr()));
 	DetElement slice(layer,s_name_y_2,det_id);
 
-	if ( x_slice_y_2.isSensitive() ) {
+	if ( x_shape_2.isSensitive() ) {
 		s_vol.setSensitiveDetector(sens);
           }
-	std::cout<<"          slice visstr is "<<x_slice_y_2.visStr()<<std::endl;
-	slice.setAttributes(description,s_vol,x_slice_y_2.regionStr(),x_slice_y_2.limitsStr(),x_slice_y_2.visStr());
+	std::cout<<"          slice visstr is "<<x_shape_2.visStr()<<std::endl;
+	slice.setAttributes(description,s_vol,x_shape_2.regionStr(),x_shape_2.limitsStr(),x_shape_2.visStr());
 
           // Slice placement.
 	PlacedVolume slice_phv = l_vol.placeVolume(s_vol,s_pos);
@@ -259,12 +259,12 @@ for(xml_coll_t si_y_2(x_layer,_U(slice_y)); si_y_2; ++si_y_2)
 int s_num_y_3 = s_num_y_2; //Whatever this maximum value of s_num is after the previous loop, increment that so there is no overlap
 double y_bottoms2_3=hwidth;  
 
-for(xml_coll_t si_y_3(x_layer,_U(slice_y)); si_y_3; ++si_y_3)  
+for(xml_coll_t si_y_3(x_layer,_U(shape)); si_y_3; ++si_y_3)  
 {
 	std::cout<<" with slice "<<s_num_y_3<<std::endl;
-	xml_comp_t x_slice_y_3 = si_y_3;
+	xml_comp_t x_shape_3 = si_y_3;
 	string     s_name_y_3  = _toString(s_num_y_3,"slice%d");
-	double     s_hzthick_y_3 = x_slice_y_3.thickness()/2.;
+	double     s_hzthick_y_3 = x_shape_3.thickness()/2.;
 	std::cout<<" with half  thickness "<<s_hzthick_y_3<<std::endl;
 
 	double y_mids2_3 = y_bottoms2_3 + s_hzthick_y_3;
@@ -275,14 +275,14 @@ for(xml_coll_t si_y_3(x_layer,_U(slice_y)); si_y_3; ++si_y_3)
 	dd4hep::Box s_box(0.6/2,s_hzthick_y_3,0.6/2);
 
 
-	dd4hep::Volume     s_vol(s_name_y_3,s_box,description.material(x_slice_y_3.materialStr()));
+	dd4hep::Volume     s_vol(s_name_y_3,s_box,description.material(x_shape_3.materialStr()));
 	DetElement slice(layer,s_name_y_3,det_id);
 
-	if ( x_slice_y_3.isSensitive() ) {
+	if ( x_shape_3.isSensitive() ) {
 		s_vol.setSensitiveDetector(sens);
           }
-	std::cout<<"          slice visstr is "<<x_slice_y_3.visStr()<<std::endl;
-	slice.setAttributes(description,s_vol,x_slice_y_3.regionStr(),x_slice_y_3.limitsStr(),x_slice_y_3.visStr());
+	std::cout<<"          slice visstr is "<<x_shape_3.visStr()<<std::endl;
+	slice.setAttributes(description,s_vol,x_shape_3.regionStr(),x_shape_3.limitsStr(),x_shape_3.visStr());
 
           // Slice placement.
 	PlacedVolume slice_phv = l_vol.placeVolume(s_vol,s_pos);
@@ -301,12 +301,12 @@ for(xml_coll_t si_y_3(x_layer,_U(slice_y)); si_y_3; ++si_y_3)
 int s_num_y_4 = s_num_y_3; //Whatever this maximum value of s_num is after the previous loop, increment that so there is no overlap
 double y_bottoms2_4=hwidth;  
 
-for(xml_coll_t si_y_4(x_layer,_U(slice_y)); si_y_4; ++si_y_4)  
+for(xml_coll_t si_y_4(x_layer,_U(shape)); si_y_4; ++si_y_4)  
 {
 	std::cout<<" with slice "<<s_num_y_4<<std::endl;
-	xml_comp_t x_slice_y_4 = si_y_4;
+	xml_comp_t x_shape_4 = si_y_4;
 	string     s_name_y_4  = _toString(s_num_y_4,"slice%d");
-	double     s_hzthick_y_4 = x_slice_y_4.thickness()/2.;
+	double     s_hzthick_y_4 = x_shape_4.thickness()/2.;
 	std::cout<<" with half  thickness "<<s_hzthick_y_4<<std::endl;
 
 	double y_mids2_4 = y_bottoms2_4 + s_hzthick_y_4;
@@ -317,14 +317,14 @@ for(xml_coll_t si_y_4(x_layer,_U(slice_y)); si_y_4; ++si_y_4)
 	dd4hep::Box s_box(0.6/2,s_hzthick_y_4,0.6/2);
 
 
-	dd4hep::Volume     s_vol(s_name_y_4,s_box,description.material(x_slice_y_4.materialStr()));
+	dd4hep::Volume     s_vol(s_name_y_4,s_box,description.material(x_shape_4.materialStr()));
 	DetElement slice(layer,s_name_y_4,det_id);
 
-	if ( x_slice_y_4.isSensitive() ) {
+	if ( x_shape_4.isSensitive() ) {
 		s_vol.setSensitiveDetector(sens);
           }
-	std::cout<<"          slice visstr is "<<x_slice_y_4.visStr()<<std::endl;
-	slice.setAttributes(description,s_vol,x_slice_y_4.regionStr(),x_slice_y_4.limitsStr(),x_slice_y_4.visStr());
+	std::cout<<"          slice visstr is "<<x_shape_4.visStr()<<std::endl;
+	slice.setAttributes(description,s_vol,x_shape_4.regionStr(),x_shape_4.limitsStr(),x_shape_4.visStr());
 
           // Slice placement.
 	PlacedVolume slice_phv = l_vol.placeVolume(s_vol,s_pos);
