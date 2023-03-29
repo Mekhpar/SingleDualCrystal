@@ -53,8 +53,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   std::cout<<"half width zmax are "<<hwidth<<" "<<hzmax<<std::endl;
 
   OpticalSurfaceManager surfMgr = description.surfaceManager();
-  //OpticalSurface cryS  = surfMgr.opticalSurface("/world/"+det_name+"#mirrorSurface");
-  OpticalSurface cryS  = surfMgr.opticalSurface("/world/E_PbWO4#mirrorSurface");
+  OpticalSurface cryS  = surfMgr.opticalSurface("/world/"+det_name+"#mirrorSurface");
+  //OpticalSurface cryS  = surfMgr.opticalSurface("/world/E_PbWO4#mirrorSurface");
   // three structures, volumes, placedvolumes, and detelements
   // volumes need a setVisAttribute
   // DetElements. you can have volumes inherit attrivutesby setting them here
