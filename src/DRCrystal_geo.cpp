@@ -53,7 +53,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   std::cout<<"half width zmax are "<<hwidth<<" "<<hzmax<<std::endl;
 
   OpticalSurfaceManager surfMgr = description.surfaceManager();
-  OpticalSurface cryS  = surfMgr.opticalSurface("/world/"+det_name+"#mirrorSurface");
+  //OpticalSurface cryS  = surfMgr.opticalSurface("/world/"+det_name+"#mirrorSurface");
+  OpticalSurface cryS  = surfMgr.opticalSurface("/world/"+det_name+"#teflonSurface");
   //OpticalSurface cryS  = surfMgr.opticalSurface("/world/E_PbWO4#mirrorSurface");
   // three structures, volumes, placedvolumes, and detelements
   // volumes need a setVisAttribute
@@ -90,7 +91,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
 
     // tower envelope
-  dd4hep::Box towertrap(hwidth+tol,hwidth+0.1+0.4+tol,hzmax+tol);
+  dd4hep::Box towertrap(hwidth+tol,hwidth/*+0.1+0.4*/+tol,hzmax+0.1+0.4+tol);
   dd4hep::Volume towerVol( "tower", towertrap, air);
   std::cout<<"   tower visstr is "<<x_towers.visStr()<<std::endl;
   towerVol.setVisAttributes(description, x_towers.visStr());
@@ -125,7 +126,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
       Position   l_pos(0.,0.,z_midl);      // Position of the layer.
       std::cout<<" placed at z of "<<z_midl<<std::endl;
 
-      dd4hep::Box l_box(hwidth,hwidth+0.1+0.4,l_hzthick);
+      dd4hep::Box l_box(hwidth,hwidth/*+0.1+0.4*/,l_hzthick+0.1+0.4);
       dd4hep::Volume     l_vol(l_name,l_box,air);
       DetElement layer(tower_det, l_name, det_id);
 
@@ -174,7 +175,9 @@ for(xml_coll_t si(x_layer,_U(slice)); si; ++si)
 
 //SiPM 1 + Silicone gap 1
 int s_num_y_1 = s_num; //Whatever this maximum value of s_num is after the previous loop, increment that so there is no overlap
-double y_bottoms2_1=hwidth;  
+//double y_bottoms2_1=hwidth;
+
+double z_bottoms2_1=-(l_hzthick+0.1+0.4);  
 
 for(xml_coll_t si_y_1(x_layer,_U(shape)); si_y_1; ++si_y_1)  
 {
@@ -184,13 +187,10 @@ for(xml_coll_t si_y_1(x_layer,_U(shape)); si_y_1; ++si_y_1)
 	double     s_hzthick_y_1 = x_shape_1.thickness()/2.;
 	std::cout<<" with half  thickness "<<s_hzthick_y_1<<std::endl;
 
-	double y_mids2_1 = y_bottoms2_1 + s_hzthick_y_1;
-	      
-
-	Position   s_pos(-0.45,y_mids2_1,-0.45);      // Position of the slice (?)
-	std::cout<<" placed at "<<y_mids2_1<<std::endl;
-	dd4hep::Box s_box(0.6/2,s_hzthick_y_1,0.6/2);
-
+	double z_mids2_1 = z_bottoms2_1 + s_hzthick_y_1;
+	Position   s_pos(0.425,0.425,z_mids2_1);      // Position of the slice (?)
+	std::cout<<" placed at "<<z_mids2_1<<std::endl;
+	dd4hep::Box s_box(0.6/2,0.6/2,s_hzthick_y_1);
 
 	dd4hep::Volume     s_vol(s_name_y_1,s_box,description.material(x_shape_1.materialStr()));
 	DetElement slice(layer,s_name_y_1,det_id);
@@ -207,17 +207,20 @@ for(xml_coll_t si_y_1(x_layer,_U(shape)); si_y_1; ++si_y_1)
 	slice.setPlacement(slice_phv);
           // Increment Z position of slice.
 
-	y_bottoms2_1 += 2.*s_hzthick_y_1;
+	z_bottoms2_1 += 2.*s_hzthick_y_1;
 
           // Increment slice number.
 	      ++s_num_y_1;
 }
 
+
+
 //SiPM 2 + Silicone gap 2
 int s_num_y_2 = s_num_y_1; //Whatever this maximum value of s_num is after the previous loop, increment that so there is no overlap
-double y_bottoms2_2=hwidth;  
+//double y_bottoms2_2=hwidth;  
 
-for(xml_coll_t si_y_2(x_layer,_U(shape)); si_y_2; ++si_y_2)  
+double z_bottoms2_2=-(l_hzthick+0.1+0.4);
+for(xml_coll_t si_y_2(x_layer,_U(chamber)); si_y_2; ++si_y_2)  
 {
 	std::cout<<" with slice "<<s_num_y_2<<std::endl;
 	xml_comp_t x_shape_2 = si_y_2;
@@ -225,13 +228,10 @@ for(xml_coll_t si_y_2(x_layer,_U(shape)); si_y_2; ++si_y_2)
 	double     s_hzthick_y_2 = x_shape_2.thickness()/2.;
 	std::cout<<" with half  thickness "<<s_hzthick_y_2<<std::endl;
 
-	double y_mids2_2 = y_bottoms2_2 + s_hzthick_y_2;
-	      
-
-	Position   s_pos(-0.45,y_mids2_2,0.45);      // Position of the slice (?)
-	std::cout<<" placed at "<<y_mids2_2<<std::endl;
-	dd4hep::Box s_box(0.6/2,s_hzthick_y_2,0.6/2);
-
+	double z_mids2_2 = z_bottoms2_2 + s_hzthick_y_2;
+	Position   s_pos(-0.425,0.425,z_mids2_2);      // Position of the slice (?)
+	std::cout<<" placed at "<<z_mids2_2<<std::endl;
+	dd4hep::Box s_box(0.6/2,0.6/2,s_hzthick_y_2);
 
 	dd4hep::Volume     s_vol(s_name_y_2,s_box,description.material(x_shape_2.materialStr()));
 	DetElement slice(layer,s_name_y_2,det_id);
@@ -248,18 +248,20 @@ for(xml_coll_t si_y_2(x_layer,_U(shape)); si_y_2; ++si_y_2)
 	slice.setPlacement(slice_phv);
           // Increment Z position of slice.
 
-	y_bottoms2_2 += 2.*s_hzthick_y_2;
+	z_bottoms2_2 += 2.*s_hzthick_y_2;
 
           // Increment slice number.
 	      ++s_num_y_2;
 }
 
 
+
 //SiPM 3 + Silicone gap 3
 int s_num_y_3 = s_num_y_2; //Whatever this maximum value of s_num is after the previous loop, increment that so there is no overlap
-double y_bottoms2_3=hwidth;  
+//double y_bottoms2_3=hwidth;  
 
-for(xml_coll_t si_y_3(x_layer,_U(shape)); si_y_3; ++si_y_3)  
+double z_bottoms2_3=-(l_hzthick+0.1+0.4);
+for(xml_coll_t si_y_3(x_layer,_U(disk)); si_y_3; ++si_y_3)  
 {
 	std::cout<<" with slice "<<s_num_y_3<<std::endl;
 	xml_comp_t x_shape_3 = si_y_3;
@@ -267,13 +269,10 @@ for(xml_coll_t si_y_3(x_layer,_U(shape)); si_y_3; ++si_y_3)
 	double     s_hzthick_y_3 = x_shape_3.thickness()/2.;
 	std::cout<<" with half  thickness "<<s_hzthick_y_3<<std::endl;
 
-	double y_mids2_3 = y_bottoms2_3 + s_hzthick_y_3;
-	      
-
-	Position   s_pos(0.45,y_mids2_3,-0.45);      // Position of the slice (?)
-	std::cout<<" placed at "<<y_mids2_3<<std::endl;
-	dd4hep::Box s_box(0.6/2,s_hzthick_y_3,0.6/2);
-
+	double z_mids2_3 = z_bottoms2_3 + s_hzthick_y_3;
+	Position   s_pos(0.425,-0.425,z_mids2_3);      // Position of the slice (?)
+	std::cout<<" placed at "<<z_mids2_3<<std::endl;
+	dd4hep::Box s_box(0.6/2,0.6/2,s_hzthick_y_3);
 
 	dd4hep::Volume     s_vol(s_name_y_3,s_box,description.material(x_shape_3.materialStr()));
 	DetElement slice(layer,s_name_y_3,det_id);
@@ -290,18 +289,20 @@ for(xml_coll_t si_y_3(x_layer,_U(shape)); si_y_3; ++si_y_3)
 	slice.setPlacement(slice_phv);
           // Increment Z position of slice.
 
-	y_bottoms2_3 += 2.*s_hzthick_y_3;
+	z_bottoms2_3 += 2.*s_hzthick_y_3;
 
           // Increment slice number.
 	      ++s_num_y_3;
 }
 
 
+
 //SiPM 4 + Silicone gap 4
 int s_num_y_4 = s_num_y_3; //Whatever this maximum value of s_num is after the previous loop, increment that so there is no overlap
-double y_bottoms2_4=hwidth;  
+//double y_bottoms2_4=hwidth;  
 
-for(xml_coll_t si_y_4(x_layer,_U(shape)); si_y_4; ++si_y_4)  
+double z_bottoms2_4=-(l_hzthick+0.1+0.4);
+for(xml_coll_t si_y_4(x_layer,_U(envelope)); si_y_4; ++si_y_4)  
 {
 	std::cout<<" with slice "<<s_num_y_4<<std::endl;
 	xml_comp_t x_shape_4 = si_y_4;
@@ -309,13 +310,10 @@ for(xml_coll_t si_y_4(x_layer,_U(shape)); si_y_4; ++si_y_4)
 	double     s_hzthick_y_4 = x_shape_4.thickness()/2.;
 	std::cout<<" with half  thickness "<<s_hzthick_y_4<<std::endl;
 
-	double y_mids2_4 = y_bottoms2_4 + s_hzthick_y_4;
-	      
-
-	Position   s_pos(0.45,y_mids2_4,0.45);      // Position of the slice (?)
-	std::cout<<" placed at "<<y_mids2_4<<std::endl;
-	dd4hep::Box s_box(0.6/2,s_hzthick_y_4,0.6/2);
-
+	double z_mids2_4 = z_bottoms2_4 + s_hzthick_y_4;
+	Position   s_pos(-0.425,-0.425,z_mids2_4);      // Position of the slice (?)
+	std::cout<<" placed at "<<z_mids2_4<<std::endl;
+	dd4hep::Box s_box(0.6/2,0.6/2,s_hzthick_y_4);
 
 	dd4hep::Volume     s_vol(s_name_y_4,s_box,description.material(x_shape_4.materialStr()));
 	DetElement slice(layer,s_name_y_4,det_id);
@@ -332,10 +330,174 @@ for(xml_coll_t si_y_4(x_layer,_U(shape)); si_y_4; ++si_y_4)
 	slice.setPlacement(slice_phv);
           // Increment Z position of slice.
 
-	y_bottoms2_4 += 2.*s_hzthick_y_4;
+	z_bottoms2_4 += 2.*s_hzthick_y_4;
 
           // Increment slice number.
 	      ++s_num_y_4;
+}
+
+
+
+//Other side
+
+//SiPM 1 + Silicone gap 1
+int s_num_z_1 = s_num_y_4; //Whatever this maximum value of s_num is after the previous loop, increment that so there is no overlap
+//double y_bottoms2_1=hwidth;  
+//int s_num_z_1 = s_num_y_3;
+double z_bott2_1=l_hzthick;
+for(xml_coll_t si_z_1(x_layer,_U(module)); si_z_1; ++si_z_1)  
+{
+	std::cout<<" with slice "<<s_num_z_1<<std::endl;
+	xml_comp_t x_module_1 = si_z_1;
+	string     s_name_z_1  = _toString(s_num_z_1,"slice%d");
+	double     s_hzthick_z_1 = x_module_1.thickness()/2.;
+	std::cout<<" with half  thickness "<<s_hzthick_z_1<<std::endl;
+
+	double z_mi2_1 = z_bott2_1 + s_hzthick_z_1;
+	Position   s_pos(0.425,0.425,z_mi2_1);      // Position of the slice (?)
+	std::cout<<" placed at "<<z_mi2_1<<std::endl;
+	dd4hep::Box s_box(0.6/2,0.6/2,s_hzthick_z_1);
+
+
+	dd4hep::Volume     s_vol(s_name_z_1,s_box,description.material(x_module_1.materialStr()));
+	DetElement slice(layer,s_name_z_1,det_id);
+
+	if ( x_module_1.isSensitive() ) {
+		s_vol.setSensitiveDetector(sens);
+          }
+	std::cout<<"          slice visstr is "<<x_module_1.visStr()<<std::endl;
+	slice.setAttributes(description,s_vol,x_module_1.regionStr(),x_module_1.limitsStr(),x_module_1.visStr());
+
+          // Slice placement.
+	PlacedVolume slice_phv = l_vol.placeVolume(s_vol,s_pos);
+	slice_phv.addPhysVolID("slice", s_num_z_1);
+	slice.setPlacement(slice_phv);
+          // Increment Z position of slice.
+
+	z_bott2_1 += 2.*s_hzthick_z_1;
+
+          // Increment slice number.
+	      ++s_num_z_1;
+}
+
+//SiPM 2 + Silicone gap 2
+int s_num_z_2 = s_num_z_1; //Whatever this maximum value of s_num is after the previous loop, increment that so there is no overlap
+//double y_bottoms2_1=hwidth;  
+
+double z_bott2_2=l_hzthick;
+for(xml_coll_t si_z_2(x_layer,_U(element)); si_z_2; ++si_z_2)  
+{
+	std::cout<<" with slice "<<s_num_z_2<<std::endl;
+	xml_comp_t x_module_2 = si_z_2;
+	string     s_name_z_2  = _toString(s_num_z_2,"slice%d");
+	double     s_hzthick_z_2 = x_module_2.thickness()/2.;
+	std::cout<<" with half  thickness "<<s_hzthick_z_2<<std::endl;
+
+	double z_mi2_2 = z_bott2_2 + s_hzthick_z_2;
+	Position   s_pos(-0.425,0.425,z_mi2_2);      // Position of the slice (?)
+	std::cout<<" placed at "<<z_mi2_2<<std::endl;
+	dd4hep::Box s_box(0.6/2,0.6/2,s_hzthick_z_2);
+
+
+	dd4hep::Volume     s_vol(s_name_z_2,s_box,description.material(x_module_2.materialStr()));
+	DetElement slice(layer,s_name_z_2,det_id);
+
+	if ( x_module_2.isSensitive() ) {
+		s_vol.setSensitiveDetector(sens);
+          }
+	std::cout<<"          slice visstr is "<<x_module_2.visStr()<<std::endl;
+	slice.setAttributes(description,s_vol,x_module_2.regionStr(),x_module_2.limitsStr(),x_module_2.visStr());
+
+          // Slice placement.
+	PlacedVolume slice_phv = l_vol.placeVolume(s_vol,s_pos);
+	slice_phv.addPhysVolID("slice", s_num_z_2);
+	slice.setPlacement(slice_phv);
+          // Increment Z position of slice.
+
+	z_bott2_2 += 2.*s_hzthick_z_2;
+
+          // Increment slice number.
+	      ++s_num_z_2;
+}
+
+//SiPM 3 + Silicone gap 3
+int s_num_z_3 = s_num_z_2; //Whatever this maximum value of s_num is after the previous loop, increment that so there is no overlap
+//double y_bottoms2_1=hwidth;  
+
+double z_bott2_3=l_hzthick;
+for(xml_coll_t si_z_3(x_layer,_U(frame)); si_z_3; ++si_z_3)  
+{
+	std::cout<<" with slice "<<s_num_z_3<<std::endl;
+	xml_comp_t x_module_3 = si_z_3;
+	string     s_name_z_3  = _toString(s_num_z_3,"slice%d");
+	double     s_hzthick_z_3 = x_module_3.thickness()/2.;
+	std::cout<<" with half  thickness "<<s_hzthick_z_3<<std::endl;
+
+	double z_mi2_3 = z_bott2_3 + s_hzthick_z_3;
+	Position   s_pos(0.425,-0.425,z_mi2_3);      // Position of the slice (?)
+	std::cout<<" placed at "<<z_mi2_3<<std::endl;
+	dd4hep::Box s_box(0.6/2,0.6/2,s_hzthick_z_3);
+
+
+	dd4hep::Volume     s_vol(s_name_z_3,s_box,description.material(x_module_3.materialStr()));
+	DetElement slice(layer,s_name_z_3,det_id);
+
+	if ( x_module_3.isSensitive() ) {
+		s_vol.setSensitiveDetector(sens);
+          }
+	std::cout<<"          slice visstr is "<<x_module_3.visStr()<<std::endl;
+	slice.setAttributes(description,s_vol,x_module_3.regionStr(),x_module_3.limitsStr(),x_module_3.visStr());
+
+          // Slice placement.
+	PlacedVolume slice_phv = l_vol.placeVolume(s_vol,s_pos);
+	slice_phv.addPhysVolID("slice", s_num_z_3);
+	slice.setPlacement(slice_phv);
+          // Increment Z position of slice.
+
+	z_bott2_3 += 2.*s_hzthick_z_3;
+
+          // Increment slice number.
+	      ++s_num_z_3;
+}
+
+//SiPM 4 + Silicone gap 4
+int s_num_z_4 = s_num_z_3; //Whatever this maximum value of s_num is after the previous loop, increment that so there is no overlap
+//double y_bottoms2_1=hwidth;  
+
+double z_bott2_4=l_hzthick;
+for(xml_coll_t si_z_4(x_layer,_U(ladder)); si_z_4; ++si_z_4)  
+{
+	std::cout<<" with slice "<<s_num_z_4<<std::endl;
+	xml_comp_t x_module_4 = si_z_4;
+	string     s_name_z_4  = _toString(s_num_z_4,"slice%d");
+	double     s_hzthick_z_4 = x_module_4.thickness()/2.;
+	std::cout<<" with half  thickness "<<s_hzthick_z_4<<std::endl;
+
+	double z_mi2_4 = z_bott2_4 + s_hzthick_z_4;
+	Position   s_pos(-0.425,-0.425,z_mi2_4);      // Position of the slice (?)
+	std::cout<<" placed at "<<z_mi2_4<<std::endl;
+	dd4hep::Box s_box(0.6/2,0.6/2,s_hzthick_z_4);
+
+
+	dd4hep::Volume     s_vol(s_name_z_4,s_box,description.material(x_module_4.materialStr()));
+	DetElement slice(layer,s_name_z_4,det_id);
+
+	if ( x_module_4.isSensitive() ) {
+		s_vol.setSensitiveDetector(sens);
+          }
+	std::cout<<"          slice visstr is "<<x_module_4.visStr()<<std::endl;
+	slice.setAttributes(description,s_vol,x_module_4.regionStr(),x_module_4.limitsStr(),x_module_4.visStr());
+
+          // Slice placement.
+	PlacedVolume slice_phv = l_vol.placeVolume(s_vol,s_pos);
+	slice_phv.addPhysVolID("slice", s_num_z_4);
+	slice.setPlacement(slice_phv);
+          // Increment Z position of slice.
+
+	z_bott2_4 += 2.*s_hzthick_z_4;
+
+          // Increment slice number.
+	      ++s_num_z_4;
 }
 
       // place the layer
